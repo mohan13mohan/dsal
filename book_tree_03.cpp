@@ -4,78 +4,133 @@
 
 using namespace std;
 
-// Tree node definition
-class TreeNode {
-public:
+struct Node {
     string name;
-    vector<TreeNode*> children;
+    vector<Node*> children;
 
-    TreeNode(string name) {
-        this->name = name;
-    }
-
-    void addChild(TreeNode* child) {
-        children.push_back(child);
-    }
-
-    void printTree(int level = 0) {
-        for (int i = 0; i < level; ++i)
-            cout << "  ";
-        cout << name << endl;
-        for (TreeNode* child : children)
-            child->printTree(level + 1);
-    }
-
-    ~TreeNode() {
-        for (TreeNode* child : children)
-            delete child;
-    }
+    Node(string n) : name(n) {}
 };
 
+void buildBookStructure(Node* parent, const string& level) {
+    int numItems;
+    cout << "Enter number of " << level << "s in " << parent->name << ": ";
+    cin >> numItems;
+    cin.ignore(); // Clear input buffer
+
+    for (int i = 1; i <= numItems; ++i) {
+        string itemName;
+        cout << "Enter " << level << " " << i << " name: ";
+        getline(cin, itemName);
+
+        Node* newNode = new Node(itemName);
+        parent->children.push_back(newNode);
+
+        if (level == "Chapter") {
+            buildBookStructure(newNode, "Section");
+        } else if (level == "Section") {
+            buildBookStructure(newNode, "Subsection");
+        }
+    }
+}
+
+void printTree(Node* root, int depth = 0) {
+    if (!root) return;
+    for (int i = 0; i < depth; ++i) cout << "  ";
+    cout << root->name << endl;
+    for (size_t i = 0; i < root->children.size(); ++i) {
+        printTree(root->children[i], depth + 1);
+    }
+}
+
+void deleteTree(Node* root) {
+    if (!root) return;
+    for (size_t i = 0; i < root->children.size(); ++i) {
+        deleteTree(root->children[i]);
+    }
+    delete root;
+}
+
 int main() {
-    // Constructing the book tree
-    TreeNode* book = new TreeNode("Book Title");
+    Node* book = new Node("Book");
 
-    // Adding chapters
-    TreeNode* chapter1 = new TreeNode("Chapter 1");
-    TreeNode* chapter2 = new TreeNode("Chapter 2");
-    book->addChild(chapter1);
-    book->addChild(chapter2);
+    cout << "--- Building Book Structure ---" << endl;
+    buildBookStructure(book, "Chapter");
 
-    // Adding sections to Chapter 1
-    TreeNode* section1_1 = new TreeNode("Section 1.1");
-    TreeNode* section1_2 = new TreeNode("Section 1.2");
-    chapter1->addChild(section1_1);
-    chapter1->addChild(section1_2);
+    cout << "\n--- Book Structure ---" << endl;
+    printTree(book);
 
-    // Adding subsections to Section 1.1
-    TreeNode* subsection1_1_1 = new TreeNode("Subsection 1.1.1");
-    TreeNode* subsection1_1_2 = new TreeNode("Subsection 1.1.2");
-    section1_1->addChild(subsection1_1_1);
-    section1_1->addChild(subsection1_1_2);
-
-    // Adding section to Chapter 2
-    TreeNode* section2_1 = new TreeNode("Section 2.1");
-    chapter2->addChild(section2_1);
-
-    // Print the entire tree
-    book->printTree();
-
-    // Free memory
-    delete book;
-
+    deleteTree(book);
     return 0;
 }
 
 
 
-// Output:-
+//output:-
+//
+//
+//
+//--- Building Book Structure ---
+//Enter number of Chapters in Book: 2
+//Enter Chapter 1 name: Ad
+//Enter number of Sections in Ad: 1
+//Enter Section 1 name: Q
+//Enter number of Subsections in Q: 1
+//Enter Subsection 1 name: q
+//Enter Chapter 2 name: Bc
+//Enter number of Sections in Bc: 1
+//Enter Section 1 name: E
+//Enter number of Subsections in E: 1
+//Enter Subsection 1 name: G
+//
+//--- Book Structure ---
+//Book
+//  Ad
+//    Q
+//      q
+//  Bc
+//    E
+//      G
+//
+//--------------------------------
+//Process exited after 56.84 seconds with return value 0
+//Press any key to continue . . .
 
-// Book Title
-//   Chapter 1
-//     Section 1.1
-//       Subsection 1.1.1
-//       Subsection 1.1.2
-//     Section 1.2
-//   Chapter 2
-//     Section 2.1
+
+
+//Flowchat:-
+//
+//
+//
+//START
+//  ¦
+//  +- 1. Create "Book" (root node)
+//  ¦
+//  +- 2. Ask user: "Number of Chapters?"
+//  ¦   ¦
+//  ¦   +- 3. For each Chapter:
+//  ¦   ¦     ¦
+//  ¦   ¦     +- 3a. Ask Chapter name
+//  ¦   ¦     ¦
+//  ¦   ¦     +- 3b. Ask "Number of Sections?"
+//  ¦   ¦     ¦   ¦
+//  ¦   ¦     ¦   +- 4. For each Section:
+//  ¦   ¦     ¦   ¦     ¦
+//  ¦   ¦     ¦   ¦     +- 4a. Ask Section name
+//  ¦   ¦     ¦   ¦     ¦
+//  ¦   ¦     ¦   ¦     +- 4b. Ask "Number of Subsections?"
+//  ¦   ¦     ¦   ¦     ¦   ¦
+//  ¦   ¦     ¦   ¦     ¦   +- 5. For each Subsection:
+//  ¦   ¦     ¦   ¦     ¦         +- 5a. Ask Subsection name
+//  ¦   ¦     ¦   ¦     ¦         +- Add to Section
+//  ¦   ¦     ¦   ¦     ¦
+//  ¦   ¦     ¦   ¦     +- Add to Chapter
+//  ¦   ¦     ¦   ¦
+//  ¦   ¦     ¦   +- Add to Book
+//  ¦   ¦     ¦
+//  ¦   ¦     +- Repeat for next Chapter
+//  ¦   ¦
+//  +- 6. Print Tree (indent based on depth)
+//  ¦
+//  +- 7. Free Memory (delete all nodes)
+//  ¦
+//  +- 8. END
