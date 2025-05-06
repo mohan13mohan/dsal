@@ -1,283 +1,300 @@
-/*
-Implement all the functions of a dictionary (ADT) using open
-hashing technique: separate chaining using linked list Data: Set of
-(key, value) pairs, Keys are mapped to values, Keys must be
-comparable, and Keys must be unique. Standard Operations: Insert
-(key, value), Find(key), Delete(key)
+#include <iostream>
+#include <string.h>
+using namespace std;
 
-|-------|
-|   4   | -> abcd -> cdba -> dbca
-|-------|
-|   0   | -> laal -> lala -> aall
-|-------|
-|   8   | -> dwupd -> puddw
-|-------|
+class HashFunction {
+    typedef struct hash {
+        long key;
+        char name[10];
+    } hash;
 
+    hash h[10];
 
-*/
-
-#include <bits/stdc++.h>
-using namespace std; 
-
-class Node {
-    string key;
-    string value;
-    Node *next = nullptr;
-
-    friend class Dictionary;
+public:
+    HashFunction();
+    void insert();
+    void display();
+    int find(long);
+    void Delete(long);
 };
 
-class Dictionary {
-
-    Node **table;
-    int tableSize;
-
-    int hash( string value ) {
-        int asciiSum = 0;
-        for( int i = 0; i < value.length(); i++ ) {
-            asciiSum += int( value[i] );
-        } 
-        return asciiSum % tableSize ;
+HashFunction::HashFunction() {
+    for (int i = 0; i < 10; i++) {
+        h[i].key = -1;
+        strcpy(h[i].name, "NULL");
     }
+}
 
-    void insertLL( Node *headNode, string key, string value ) {
-        Node *currentNode = headNode;
-        while( currentNode->next != nullptr )
-            currentNode = currentNode->next;
-        Node *newNode = new ( Node );
-        newNode->key = key;
-        newNode->next = NULL;
-        newNode->value = value;
-        currentNode->next = newNode;
+void HashFunction::Delete(long k) {
+    int index = find(k);
+    if (index == -1) {
+        cout << "Key Not Found" << endl;
+    } else {
+        h[index].key = -1;
+        strcpy(h[index].name, "NULL");
+        cout << "Key is Deleted" << endl;
     }
+}
 
-    // Finds the Linked List mapped to the Key
-    Node* findLL ( Node *headNode, string key ) {
-        Node *currentNode = headNode;
-        while( currentNode->next != NULL ) {
-            if( currentNode->key == key ) {
-                return currentNode;
+int HashFunction::find(long k) {
+    for (int i = 0; i < 10; i++) {
+        if (h[i].key == k) {
+            cout << h[i].key << " is Found at " << i << " Location With Name " << h[i].name << endl;
+            return i;
+        }
+    }
+    return -1;
+}
+
+void HashFunction::display() {
+    cout << "Key\t\tName" << endl;
+    for (int i = 0; i < 10; i++) {
+        // HERE WE ARE USING \t MEANS "horizontal tab spaces"
+        cout << "h[" << i << "]\t" << h[i].key << "\t\t" << h[i].name << endl;
+    }
+}
+
+void HashFunction::insert() {
+    char ans, n[10], ntemp[10];
+    long k, temp;
+    int v, hi, cnt = 0, flag = 0, i;
+
+    do {
+        if (cnt >= 10) {
+            cout << "Hash Table is FULL" << endl;
+            break;
+        }
+
+        cout << "Enter a Telephone No: ";
+        cin >> k;
+        cout << "Enter a Client Name: ";
+        cin >> n;
+
+        hi = k % 10;
+
+        if (h[hi].key == -1) {
+            h[hi].key = k;
+            strcpy(h[hi].name, n);
+        } else {
+            if (h[hi].key % 10 != hi) {
+                temp = h[hi].key;
+                strcpy(ntemp, h[hi].name);
+                h[hi].key = k;
+                strcpy(h[hi].name, n);
+
+                for (i = hi + 1; i < 10; i++) {
+                    if (h[i].key == -1) {
+                        h[i].key = temp;
+                        strcpy(h[i].name, ntemp);
+                        flag = 1;
+                        break;
+                    }
+                }
+
+                for (i = 0; i < hi && flag == 0; i++) {
+                    if (h[i].key == -1) {
+                        h[i].key = temp;
+                        strcpy(h[i].name, ntemp);
+                        break;
+                    }
+                }
+            } else {
+                for (i = hi + 1; i < 10; i++) {
+                    if (h[i].key == -1) {
+                        h[i].key = k;
+                        strcpy(h[i].name, n);
+                        flag = 1;
+                        break;
+                    }
+                }
+
+                for (i = 0; i < hi && flag == 0; i++) {
+                    if (h[i].key == -1) {
+                        h[i].key = k;
+                        strcpy(h[i].name, n);
+                        break;
+                    }
+                }
             }
-            currentNode = currentNode -> next;
-        }
-        if(currentNode->key == key) return currentNode;
-        else return nullptr;
-    }
-
-    // Prints the Linked List mapped to the Key
-    void printLL( Node* headNode ) {
-        Node* currentNode = headNode ;
-        while( currentNode != nullptr ) {
-            // cout.width(5);
-            cout << currentNode -> key << " " << currentNode -> value << "," ;
-            currentNode = currentNode -> next ;
-        }
-    }
-
-    // Deletes from the Linked List mapped to the key
-    void deleteLL( int index, Node* headNode, string key ) {
-
-        if(headNode == NULL)
-            cout<<"No such record exists to be deleted!"<<endl;
-        
-        else if( headNode->key == key ) {
-            Node *nextNode = headNode->next;
-            delete table[ index ];
-            table[ index ] = nextNode;
-        }
-        
-        else {
-            Node *currentNode = headNode;
-            Node *prevNode = NULL;
-            while( currentNode->next != nullptr ) {
-                if( currentNode->key == key )
-                    break;
-                prevNode = currentNode;
-                currentNode = currentNode->next;
-            }
-        
-            if (currentNode->key == key) {
-                prevNode->next = currentNode->next;
-                delete currentNode;
-            }
-
-            else cout<<"No such element"<<endl;
-        }
-    }
-
-    public: 
-    
-    Dictionary ( int n ) {
-        this->tableSize = n;
-        table = new Node*[ tableSize ];
-        for( int i = 0; i < tableSize; i++ ) {
-            table[i] = nullptr;
-        }
-    } 
-
-    void insert( string key, string value ) {
-        int hashAddress = hash( key );
-        if( table[ hashAddress ] == nullptr ) {
-            Node *newNode = new ( Node );
-            newNode->key = key;
-            newNode->next = NULL;
-            newNode->value = value;
-            table[ hashAddress ] = newNode;
         }
 
-        else {
-            insertLL(table[ hashAddress ], key, value );
-        }
-    }
+        flag = 0;
+        cnt++;
 
-    void display() {
-        for( int i = 0; i < tableSize; i++ ) {
-            // cout.width( 5 );
-            cout<<i<<" ";
-            printLL( table[i] );
-            cout<<endl;
-        }
-    }
-
-    void search( string key ) {
-        int hashAddress = hash(key);
-        Node *foundNode = findLL( table[ hashAddress ], key );
-        if( foundNode == nullptr )
-            cout<<"No record found"<<endl;
-        else {
-            cout<<"\nKey: "<<key<<endl;
-            cout<<"Value: "<<foundNode->value<<endl;
-        }
-    }
-
-    void del( string key ) {
-        int hashAddress = hash(key);
-        deleteLL( hashAddress, table[ hashAddress ], key);
-    }
-};
+        cout << ".....Do You Want to Insert More Key (y/n): ";
+        cin >> ans;
+    } while (ans == 'y' || ans == 'Y');
+}
 
 int main() {
+    long k;
+    int ch, index;
+    char ans;
+    HashFunction obj;
 
-    Dictionary dict(10);
+    do {
+        cout << "***** Telephone Directory (ADT) *****" << endl;
+        cout << "1. Insert" << endl;
+        cout << "2. Display" << endl;
+        cout << "3. Find" << endl;
+        cout << "4. Delete" << endl;
+        cout << "5. Exit" << endl;
+        cout << "Enter Your Choice: ";
+        cin >> ch;
 
-    // Placeholder values
-    dict.insert("abcd", "1000");
-    dict.insert("cdba", "2000");
-    dict.insert("dbca","5000");
-
-    dict.insert("laal", "1000");
-    dict.insert("lala", "2000");
-    dict.insert("aall","5000");
-
-    dict.insert("dwupd", "1000");
-    dict.insert("puddw", "2000");
-    
-    while( true ) {
-        cout<<"1. Insert key:value pair"<<endl;
-        cout<<"2. Search for value with key"<<endl;
-        cout<<"3. Delete the key:value pair"<<endl;
-        cout<<"4. Display the dictionary"<<endl;
-        cout<<"\nEnter your choice (any other i/p for exit) : ";
-        int choice;
-        cin>>choice;
-
-        if( choice == 1) {
-            string key, value;
-            cout<<"Enter key: "; cin>>key;
-            cout<<"Enter corresponding value: "; cin>>value;
-            dict.insert( key, value ); 
-        }
-        
-        else if( choice == 2) {
-            string key;
-            cout<<"Enter key: "; cin>>key;
-            dict.search( key );
-        }
-
-        else if( choice == 3) {
-            string key;
-            cout<<"Enter key: "; cin>>key;
-            dict.del( key );
-            // cout<< key << " has been deleted"<<endl;
-        }
-
-        else if( choice == 4 ) {
-            dict.display();
-        }
-
-        else 
+        switch (ch) {
+        case 1:
+            obj.insert();
             break;
-    }
+        case 2:
+            obj.display();
+            break;
+        case 3:
+            cout << "Enter a Key Which You Want to Search: ";
+            cin >> k;
+            index = obj.find(k);
+            if (index == -1) {
+                cout << "Key Not Found" << endl;
+            }
+            break;
+        case 4:
+            cout << "Enter a Key Which You Want to Delete: ";
+            cin >> k;
+            obj.Delete(k);
+            break;
+        case 5:
+            break;
+        default:
+            cout << "Invalid choice!" << endl;
+        }
+
+        cout << ".....Do You Want to Continue in Main Menu (y/n): ";
+        cin >> ans;
+    } while (ans == 'y' || ans == 'Y');
 
     return 0;
 }
 
 
 
+//output:-
+//
+//
+//***** Telephone Directory (ADT) *****
+//1. Insert
+//2. Display
+//3. Find
+//4. Delete
+//5. Exit
+//Enter Your Choice: 1
+//Enter a Telephone No: 8989
+//Enter a Client Name: harsh
+//.....Do You Want to Insert More Key (y/n): y
+//Enter a Telephone No: 5656
+//Enter a Client Name: jay
+//.....Do You Want to Insert More Key (y/n): y
+//Enter a Telephone No: 2323
+//Enter a Client Name: gayan
+//.....Do You Want to Insert More Key (y/n): n
+//.....Do You Want to Continue in Main Menu (y/n): y
+//***** Telephone Directory (ADT) *****
+//1. Insert
+//2. Display
+//3. Find
+//4. Delete
+//5. Exit
+//Enter Your Choice: 2
+//Key             Name
+//h[0]    -1              NULL
+//h[1]    -1              NULL
+//h[2]    -1              NULL
+//h[3]    2323            gayan
+//h[4]    -1              NULL
+//h[5]    -1              NULL
+//h[6]    5656            jay
+//h[7]    -1              NULL
+//h[8]    -1              NULL
+//h[9]    8989            harsh
+//.....Do You Want to Continue in Main Menu (y/n): y
+//***** Telephone Directory (ADT) *****
+//1. Insert
+//2. Display
+//3. Find
+//4. Delete
+//5. Exit
+//Enter Your Choice: 3
+//Enter a Key Which You Want to Search: 8989
+//8989 is Found at 9 Location With Name harsh
+//.....Do You Want to Continue in Main Menu (y/n): y
+//***** Telephone Directory (ADT) *****
+//1. Insert
+//2. Display
+//3. Find
+//4. Delete
+//5. Exit
+//Enter Your Choice: 4
+//Enter a Key Which You Want to Delete: 5656
+//5656 is Found at 6 Location With Name jay
+//Key is Deleted
+//.....Do You Want to Continue in Main Menu (y/n): y
+//***** Telephone Directory (ADT) *****
+//1. Insert
+//2. Display
+//3. Find
+//4. Delete
+//5. Exit
+//Enter Your Choice: 2
+//Key             Name
+//h[0]    -1              NULL
+//h[1]    -1              NULL
+//h[2]    -1              NULL
+//h[3]    2323            gayan
+//h[4]    -1              NULL
+//h[5]    -1              NULL
+//h[6]    -1              NULL
+//h[7]    -1              NULL
+//h[8]    -1              NULL
+//h[9]    8989            harsh
+//.....Do You Want to Continue in Main Menu (y/n):
 
 
-// Output:- 
 
-// 1. Insert key:value pair
-// 2. Search for value with key
-// 3. Delete the key:value pair
-// 4. Display the dictionary
-
-// Enter your choice (any other i/p for exit) : 1
-// Enter key: 2
-// Enter corresponding value: 24
-// 1. Insert key:value pair
-// 2. Search for value with key
-// 3. Delete the key:value pair
-// 4. Display the dictionary
-
-// Enter your choice (any other i/p for exit) : 1
-// Enter key: 5
-// Enter corresponding value: 89
-// 1. Insert key:value pair
-// 2. Search for value with key
-// 3. Delete the key:value pair
-// 4. Display the dictionary
-
-// Enter your choice (any other i/p for exit) : 1
-// Enter key: 6
-// Enter corresponding value: 49
-// 1. Insert key:value pair
-// 2. Search for value with key
-// 3. Delete the key:value pair
-// 4. Display the dictionary
-
-// Enter your choice (any other i/p for exit) : 2
-// Enter key: 5
-
-// Key: 5
-// Value: 89
-// 1. Insert key:value pair
-// 2. Search for value with key
-// 3. Delete the key:value pair
-// 4. Display the dictionary
-
-// Enter your choice (any other i/p for exit) : 3
-// Enter key: 6
-// 1. Insert key:value pair
-// 2. Search for value with key
-// 3. Delete the key:value pair
-// 4. Display the dictionary
-
-// Enter your choice (any other i/p for exit) : 4
-// 0 laal 1000,lala 2000,aall 5000,2 24,
-// 1 
-// 2 
-// 3 5 89,
-// 4 abcd 1000,cdba 2000,dbca 5000,
-// 5 
-// 6 
-// 7 
-// 8 dwupd 1000,puddw 2000,
-// 9 
-// 1. Insert key:value pair
-// 2. Search for value with key
-// 3. Delete the key:value pair
-// 4. Display the dictionary
-
-// Enter your choice (any other i/p for exit) : 
+//flowchat:-
+//
+//
+//Start
+//Begin the operation (Insert / Find / Delete).
+//
+//Input (key, value)
+//Get the key (and value for insert).
+//
+//Compute Hash Index
+//Use index = Hash(key), e.g., key % table_size.
+//
+//Check Collision
+//Is the slot at index empty?
+//
+//If yes ? proceed to step 6.
+//
+//If no ? collision occurred ? step 5.
+//
+//Handle Collision
+//
+//Without Replacement: Add the (key, value) to the linked list at index.
+//
+//With Replacement: If existing key at index doesn't belong there, swap and reinsert displaced key.
+//
+//Perform Operation
+//
+//Insert: Add key-value at correct position.
+//
+//Find: Search the list at index for key.
+//
+//Delete: Search and remove key from list.
+//
+//Return Result
+//
+//Return value (Find), success/failure (Insert/Delete).
+//
+//End
+//Finish the operation.
