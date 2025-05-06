@@ -143,3 +143,131 @@ int main() {
 
     return 0;
 }
+
+
+
+
+
+//output:-
+//
+//
+//Telephone Directory Menu:
+//1. Insert
+//2. Display
+//3. Search
+//4. Delete
+//5. Exit
+//1
+//Enter phone number to insert: 5955465
+//
+//Telephone Directory Menu:
+//1. Insert
+//2. Display
+//3. Search
+//4. Delete
+//5. Exit
+//1
+//Enter phone number to insert: 84656526
+//
+//Telephone Directory Menu:
+//1. Insert
+//2. Display
+//3. Search
+//4. Delete
+//5. Exit
+//2
+//a[0]
+//a[1]
+//a[2]
+//a[3]
+//a[4]
+//a[5] -> 5955465
+//a[6] -> 84656526
+//a[7]
+//a[8]
+//a[9]
+//
+//Telephone Directory Menu:
+//1. Insert
+//2. Display
+//3. Search
+//4. Delete
+//5. Exit
+//3
+//Enter the number to be searched: 84656526
+//Element found at: 6 : 84656526
+//
+//Telephone Directory Menu:
+//1. Insert
+//2. Display
+//3. Search
+//4. Delete
+//5. Exit
+//4
+//Enter the phone number to delete: 84656526
+//Phone number deleted.
+//
+//Telephone Directory Menu:
+//1. Insert
+//2. Display
+//3. Search
+//4. Delete
+//5. Exit
+//2
+//a[0]
+//a[1]
+//a[2]
+//a[3]
+//a[4]
+//a[5] -> 5955465
+//a[6]
+//a[7]
+//a[8]
+//a[9]
+//
+//Telephone Directory Menu:
+//1. Insert
+//2. Display
+//3. Search
+//4. Delete
+//5. Exit
+
+
+
+
+//flow chart:-
+//
+//
+//Start
+//
+//Input Data
+//Accept N clients' data: each entry has a key (e.g., name or ID) and a telephone number.
+//
+//Choose Hash Function
+//Select a suitable hash function, e.g., h(key) = key % table_size.
+//
+//Insert Data into Hash Table (Chaining Without Replacement)
+//
+//If collision occurs, append to the linked list at that index.
+//
+//Maintain a count of comparisons during insertion.
+//
+//Insert Data into Hash Table (Chaining With Replacement)
+//
+//If collision occurs and existing entry doesn’t belong to that index, swap and reinsert.
+//
+//Maintain a count of comparisons during insertion.
+//
+//Search for a Set of Keys (Same for Both Techniques)
+//
+//Search a set of M telephone numbers (by key).
+//
+//Record number of comparisons required for each technique.
+//
+//Compare Both Techniques
+//
+//Compare number of comparisons for lookup.
+//
+//Output performance statistics.
+//
+//End
